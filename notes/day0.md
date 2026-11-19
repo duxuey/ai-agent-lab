@@ -2,6 +2,7 @@
 
 ## 跑通的命令
 .\.venv\Scripts\python.exe day0_smoke.py
+.\.venv\Scripts\python.exe baseline.py
 
 ## 踩过的坑
 1. `python day0_smoke.py` 报 ModuleNotFoundError → python 不是 venv 的
