@@ -1,0 +1,2 @@
+Q：为什么 pip install openai 成功了，python day0_smoke.py 还是 ModuleNotFoundError？ 
+A：装包和运行用了两个不同的 Python 解释器。pip 可能属于系统 Python，而 python 指向另一个。判断方法：where python + python -m pip -V 看两者路径是否一致；根治办法是永远用 python -m pip install。
