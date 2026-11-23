@@ -1,0 +1,17 @@
+{
+  "2026-11-20-git-check-ignore.md": {
+    "created": "2026-11-20",
+    "step": 1,
+    "next": "2026-11-24"
+  },
+  "2026-11-20-pip-python.md": {
+    "created": "2026-11-20",
+    "step": 1,
+    "next": "2026-11-26"
+  },
+  "2026-11-20-temperature-zero.md": {
+    "created": "2026-11-20",
+    "step": 1,
+    "next": "2026-11-24"
+  }
+}
