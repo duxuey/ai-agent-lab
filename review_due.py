@@ -3,6 +3,7 @@
 
 用法：
     python review_due.py                     列出今天到期和逾期的卡
+    python review_due.py --quiz              只打印到期的题目（不剧透答案）
     python review_due.py --done <关键词...>   标记已复习，排下一次
     python review_due.py --reset <关键词...>  答错/忘了：从头再走一轮
     python review_due.py --all               看所有卡的状态
@@ -51,11 +52,32 @@ def sync(state):
             }
     for gone in [k for k in state if k not in names]:
         del state[gone]
-    return files
+    return {p.name: p for p in files}
 
 
 def fmt(name):
     return name[:-3] if name.endswith(".md") else name
+
+
+def extract_question(path):
+    """取卡片里的 Q 段：从包含 Q 的行开始，到空行或 A 之前为止。"""
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return ""
+    buf = []
+    started = False
+    for line in lines:
+        s = line.strip()
+        if not started:
+            if s.startswith(("**Q", "Q：", "Q:")):
+                started = True
+                buf.append(s.lstrip("*"))
+            continue
+        if not s or s.startswith(("**A", "A：", "A:")):
+            break
+        buf.append(s)
+    return " ".join(buf).replace("**", "")
 
 
 def pick(state, keys):
@@ -68,11 +90,22 @@ def pick(state, keys):
     return out
 
 
+def due_list(state, today):
+    out = []
+    for name, it in state.items():
+        if it["next"] is None:
+            continue
+        nxt = date.fromisoformat(it["next"])
+        if nxt <= today:
+            out.append((nxt, name, it))
+    return sorted(out)
+
+
 def main():
     args = sys.argv[1:]
     today = date.today()
     state = load_state()
-    sync(state)
+    files = sync(state)
 
     if args and args[0] in ("--done", "--reset"):
         keys = args[1:]
@@ -108,13 +141,21 @@ def main():
             print(f"{fmt(name):45s} 第{it['step']}/5 次  下次 {nxt}")
         return 0
 
-    due = []
-    for name, it in state.items():
-        if it["next"] is None:
-            continue
-        nxt = date.fromisoformat(it["next"])
-        if nxt <= today:
-            due.append((nxt, name, it))
+    due = due_list(state, today)
+
+    if args and args[0] == "--quiz":
+        if not due:
+            print(f"今天没有到期卡片（{today.isoformat()}）")
+            return 0
+        print(f"到期 {len(due)} 张，先别翻卡片，口头回答：\n")
+        for i, (nxt, name, it) in enumerate(due, 1):
+            late = (today - nxt).days
+            flag = f"逾期{late}天" if late else "今天"
+            print(f"{i}. [{flag}] {fmt(name)}")
+            q = extract_question(files[name])
+            print(f"   {q or '（未能解析出问题，请打开文件看）'}\n")
+        print("答完： --done <关键词...>   答错： --reset <关键词...>")
+        return 0
 
     if not due:
         print(f"今天没有到期卡片（{today.isoformat()}）")
@@ -126,11 +167,11 @@ def main():
         return 0
 
     print(f"到期 {len(due)} 张（{today.isoformat()}）\n")
-    for nxt, name, it in sorted(due):
+    for nxt, name, it in due:
         late = (today - nxt).days
         flag = f"逾期 {late} 天" if late else "今天"
         print(f"[{flag}] 第 {it['step'] + 1}/5 次  {fmt(name)}")
-    print("\n复习完： python review_due.py --done <关键词...>")
+    print("\n用 --quiz 只看题目，或 --done <关键词...> 标记完成")
     return 0
 
 
