@@ -13,5 +13,35 @@
     "created": "2026-11-20",
     "step": 2,
     "next": "2026-11-27"
+  },
+  "2026-11-23-bpe-merge.md": {
+    "created": "2026-11-23",
+    "step": 2,
+    "next": "2026-12-02"
+  },
+  "2026-11-23-cn-en-token.md": {
+    "created": "2026-11-23",
+    "step": 1,
+    "next": "2026-11-28"
+  },
+  "2026-11-23-fixed-overhead.md": {
+    "created": "2026-11-23",
+    "step": 1,
+    "next": "2026-11-28"
+  },
+  "2026-11-24-attention-budget.md": {
+    "created": "2026-11-24",
+    "step": 1,
+    "next": "2026-11-28"
+  },
+  "2026-11-24-attention-four-steps.md": {
+    "created": "2026-11-24",
+    "step": 2,
+    "next": "2026-12-02"
+  },
+  "2026-11-24-position-encoding.md": {
+    "created": "2026-11-24",
+    "step": 1,
+    "next": "2026-11-28"
   }
 }
