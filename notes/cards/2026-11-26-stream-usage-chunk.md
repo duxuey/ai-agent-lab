@@ -1,18 +1,19 @@
-# 流式响应的最后一块只有 usage
+# 流式响应的收尾块（跨厂商差异）
 
-**Q：** 打开 `stream_options={"include_usage": True}` 后，遍历 chunk 报 `IndexError`，为什么？
+**Q：** 流式遍历 chunk 时，收尾块和数据块有什么区别？
 
-**A：** 最后的收尾 chunk 只带 `usage`，`choices` 是空列表，所以 `chunk.choices[0]` 越界。
+**A：** 收尾块带 `usage`（需要 `stream_options={"include_usage": True}` 才会给），
+content 是空的。它的 `choices` 是否为空**取决于厂商**：
 
-**正确写法：**
+- OpenAI 官方：usage 块的 `choices` 是空列表
+- DeepSeek 实测（2026-11-26）：`choices` 仍有 1 个元素，`content` 是空字符串 `''`
 
-```python
-delta = chunk.choices[0].delta.content if chunk.choices else None
-if chunk.usage:
-    usage = chunk.usage
-```
+所以跨厂商必须写 `chunk.choices[0].delta.content if chunk.choices else None`，
+否则换一家就 `IndexError`。
 
-**通用规律：** 流式协议里，**数据包和元数据包是分开的**；结尾那一块常常没有内容。
-接任何流式接口都要先问一句："收尾包长什么样？"
+**Q：** 第一块 chunk 的 content 是什么？
 
-**一句话：** 最后一块不是内容，是账单。
+**A：** DeepSeek 是 `''`（空串），OpenAI 常见是 `None`。
+`if delta:` 同时过滤这两种，是防御式写法——防的是厂商差异，不是"第几轮"。
+
+**一句话：** 兼容的字段名，不兼容的边界行为。
