@@ -6,8 +6,8 @@
   },
   "2026-11-20-pip-python.md": {
     "created": "2026-11-20",
-    "step": 1,
-    "next": "2026-11-26"
+    "step": 2,
+    "next": "2026-12-03"
   },
   "2026-11-20-temperature-zero.md": {
     "created": "2026-11-20",
@@ -43,5 +43,10 @@
     "created": "2026-11-24",
     "step": 1,
     "next": "2026-11-28"
+  },
+  "2026-11-25-reasoning-max-tokens.md": {
+    "created": "2026-11-25",
+    "step": 1,
+    "next": "2026-11-29"
   }
 }
